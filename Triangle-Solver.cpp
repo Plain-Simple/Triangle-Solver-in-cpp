@@ -7,13 +7,14 @@
 //============================================================================
 
 #include <iostream>
+#include <cmath>
 using namespace std;
 
 // Function prototypes
 void setup();
 void input(double &sideA, double &sideB, double &sideC, double &angleA, double &angleB, double &angleC);
 bool errCheck(double sideA, double sideB, double sideC, double angleA, double angleB, double angleC);
-void SolveASA(double triangle[], int offset)
+void SolveASA(double triangle[], int offset);
 void SolveSSS(double triangle[]);
 
 int main() {
