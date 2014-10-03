@@ -25,7 +25,7 @@ int main() {
 	// Function calls
 	setup();
 	do {
-		input(sideA, sivoid SolveASA(double triangle[], int offset)deB, sideC, angleA, angleB, angleC);
+		input(sideA, sideB, sideC, angleA, angleB, angleC);
 		error = errCheck(sideA, sideB, sideC, angleA, angleB, angleC);
 	} while (error);
 	return 0;
