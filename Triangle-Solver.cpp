@@ -13,6 +13,8 @@ using namespace std;
 void setup();
 void input(double &sideA, double &sideB, double &sideC, double &angleA, double &angleB, double &angleC);
 bool errCheck(double sideA, double sideB, double sideC, double angleA, double angleB, double angleC);
+void SolveASA(double triangle[], int offset)
+void SolveSSS(double triangle[]);
 
 int main() {
 	// Variable declaration
@@ -22,7 +24,7 @@ int main() {
 	// Function calls
 	setup();
 	do {
-		input(sideA, sideB, sideC, angleA, angleB, angleC);
+		input(sideA, sivoid SolveASA(double triangle[], int offset)deB, sideC, angleA, angleB, angleC);
 		error = errCheck(sideA, sideB, sideC, angleA, angleB, angleC);
 	} while (error);
 	return 0;
@@ -108,4 +110,22 @@ bool errCheck(double sideA, double sideB, double sideC, double angleA, double an
 	}
 
 	return error;
+}
+
+
+void SolveASA(double triangle[], int offset) {
+  triangle[offset] = 180 - (triangle[(offset + 2) % 6] +
+                            triangle[(offset - 2) % 6]);
+  double sine_angle_ratio = sin(triangle[(offset + 3) % 6]) / triangle[offset];
+  triangle[(offset + 1) % 6] =
+  asin(triangle[(offset - 2) % 6] * sine_angle_ratio);
+  triangle[(offset - 1) % 6] =
+  asin(triangle[(offset + 2) % 6] * sine_angle_ratio);
+}
+void SolveSSS (double triangle[]) {
+  triangle[0] = acos((pow(triangle[1], 2) + pow(triangle[5], 2) -
+                     pow(triangle[3], 2)) / 2 * triangle[1] * triangle[5]);
+  triangle[2] = acos((pow(triangle[3], 2) + pow(triangle[1], 2) -
+                     pow(triangle[5], 2)) / 2 * triangle[3] * triangle[1]);
+  triangle[4] = 180 - (triangle[2] + triangle[0]);
 }
