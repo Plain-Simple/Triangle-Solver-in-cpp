@@ -16,7 +16,7 @@ using namespace std;
 void PrintGraphics();
 void Input(double triangle[6]);
 bool IsInvalid(double triangle [6]);
-void SolveASA(double triangle [6], int offset);
+void SolveASA(double triangle [6], int offset); /// what is int offset?
 void SolveSSS(double triangle [6]);
 
 int main() {
@@ -47,7 +47,7 @@ void PrintGraphics() {
       << "888         888  \"Y888888  888  888  888           \"Y8888P\"   888  888  888  888  88888P\"   888   \"Y8888  \n"
       << "                                                                                  888                       \n"
       << "                                                                                  888                       \n"
-      << "                                                                                  888                       ";
+      << "                                                                                  888                       \n";
   // Triangle diagram
   cout
       << "                       A \n"
@@ -58,24 +58,28 @@ void PrintGraphics() {
       << "                   /   |\n"
       << "                  /    |\n"
       << "                 /     |\n"
-      << "              B /      | C\n"
+      << "         Side B /      | Side C\n"
       << "               /       |\n"
       << "              /        |\n"
       << "             /         |\n"
       << "            /          |\n"
       << "           /           |\n"
       << "          /____________|\n"
-      << "        C       A       B\n";
+      << "        C     Side A       B\n\n";
 }
 
 void Input(double triangle [6]) {
-  for (int i = 0; i < 3; i++) {
-    cout << "Please enter side " << i << " (0 if unknown):\n";
+  for (int i = 65; i < 68; i++) { /* set i to 65 for ascii value "A" */
+	char side = i;
+    cout << "Please enter side " << side << " (0 if unknown): ";
     cin >> triangle[i * 2 + 1];
+    cout << endl; /// what looks better; with endl or without?
   }
-  for (int i = 0; i < 3; i++) {
-    cout << "Please enter angle " << i << " (0 if unknown):\n";
+  for (int i = 97; i < 100; i++) { /* set i to 97 for ascii value "a" */
+	char angle = i;
+    cout << "Please enter angle " << angle << " (0 if unknown):";
     cin >> triangle[2*i];
+    cout << endl;
   }
 }
 
@@ -84,29 +88,29 @@ bool IsInvalid(double triangle[6]) { /// I think you could make all of this
   // Side and angle errors
   if(triangle[0] && triangle[1] && triangle[2] &&
      triangle[3] && triangle[4] && triangle[5]) {
-    cout << "All sides and angles have been defined. "
+    cout << endl << "All sides and angles have been defined. "
             "There is nothing to solve.\n";
     return true;
   } else if(triangle[3] < 0 || triangle[5] < 0 || triangle[1] < 0) { // Side errors
-    cout << "One or more of the sides has negative length.\n";
+    cout << endl << "One or more of the sides has negative length.\n";
     return true;
   } else if(!(triangle[3] && triangle[5] && triangle[1])) {
-    cout << "One or more of the sides has length 0.\n";
+    cout << endl << "One or more of the sides has length 0.\n"; /// This is a little confusing because the sides can be 0
     return true;
   } else if((triangle[3] - triangle[5] - triangle[1]) > 0 || (triangle[5] - triangle[3] - triangle[1]) > 0
       || (triangle[1] - triangle[3] - triangle[5]) > 0) {
-    cout << "One of the sides is longer than the other two combined.\n";
+    cout << endl << "One of the sides is longer than the other two combined.\n";
     return true;
   } else if(!((triangle[3] - triangle[5] - triangle[1]) && (triangle[5] - triangle[3] - triangle[1])
        && (triangle[1] - triangle[3] - triangle[5]))) {
-    cout << "One of the sides is the same length as the other two combined.\n";
+    cout << endl << "One of the sides is the same length as the other two combined.\n";
     return true;
   } else if(triangle[0] + triangle[2] + triangle[4] > 180) {
-    cout << "The sum of the angle measures is greater than 180°.\n";
+    cout << endl << "The sum of the angle measures is greater than 180°.\n";
     return true;
   } else if(triangle[0] + triangle[2] + triangle[4] < 180 && (triangle[0] && triangle[2]
                                         && triangle[4])) { // Checks if all angles are provided and sum to < 180
-    cout << "The sum of the angle measures is less than 180°.\n";
+    cout << endl << "The sum of the angle measures is less than 180°.\n";
     return true;
   } else {
     return false;
@@ -130,3 +134,4 @@ void SolveSSS(double triangle [6]) {
                       pow(triangle[5], 2)) / 2 * triangle[3] * triangle[1]);
   triangle[4] = 180 - (triangle[2] + triangle[0]);
 }
+
