@@ -18,6 +18,9 @@ void Input(double triangle[6]);
 //bool IsInvalid(double triangle [6]);
 string IdentifyTriangle(double triangle [6]);
 void SolveASA(double triangle [6], int offset); /// what is int offset?
+/// int offset is the number of the element that is the first A in ASA
+/// this should either be done everywhere or nowhere, so we will need to
+/// figure that out -Matt
 void SolveSSS(double triangle [6]);
 void SolveSAS(double triangle [6]);
 
@@ -54,7 +57,7 @@ void PrintGraphics() {
       << "                                                                                  888                       \n";
   // Triangle diagram
   cout
-      << "                       A \n"
+      << "                       B \n"
       << "                       .\n"
       << "                      /|\n"
       << "                     / |\n"
@@ -62,27 +65,35 @@ void PrintGraphics() {
       << "                   /   |\n"
       << "                  /    |\n"
       << "                 /     |\n"
-      << "         Side B /      | Side C\n"
+      << "         Side C /      | Side A\n"
       << "               /       |\n"
       << "              /        |\n"
       << "             /         |\n"
       << "            /          |\n"
       << "           /           |\n"
       << "          /____________|\n"
-      << "        C     Side A       B\n\n";
+      << "        A     Side B       C\n\n";
 }
 
 void Input(double triangle [6]) {
+  /* I fixed an issue with the input. We need to remember that on the diagram,
+  side A is across from angle A, but once they are inputted, they are 1 (side)
+  and 4 (angle). It's a bit strange, but it is much harder to work with
+  opposites in loops, etc. -Matt */
+
+
   for (int i = 65; i < 68; i++) { /* set i to 65 for ascii value "A" */
+                                  /// nice work! -Matt
 	char side = i;
     cout << "Please enter side " << side << " (0 if unknown): ";
     cin >> triangle[2 * i - 129];
     cout << endl; /// what looks better; with endl or without?
+                  /// looks good with endl, but not a big diff -Matt
   }
   for (int i = 97; i < 100; i++) { /* set i to 97 for ascii value "a" */
 	char angle = i;
     cout << "Please enter angle " << angle << " (0 if unknown):";
-    cin >> triangle[2 * i - 194];
+    cin >> triangle[(2 * i - 193) % 6];
     cout << endl;
   }
 }
@@ -122,22 +133,26 @@ void Input(double triangle [6]) {
 }*/
 
 string IdentifyTriangle(double triangle [6]) { /// not quite there yet; help would be appreciated
-	string type = "undefined";
-	int i;
-	for(i = 1; i < 6; i = i + 2)
-	{
-		if(triangle[i % 6] != 0 && triangle[(i + 2) % 6] != 0 && triangle[(i + 1) % 6] != 0)
-			type = "SAS";
-		else if(triangle[i % 6] != 0 && triangle[(i + 2) % 6] != 0 && triangle[(i + 4) % 6] != 0)
-			type = "SSS";
-		else if(triangle[(i - 1) % 6] != 0 && triangle[(i + 1) % 6 != 0] && triangle[(i + 2) % 6] != 0) 
-			type = "ASA";
-		else if(triangle[i % 6] != 0 && triangle[(i + 1) % 6] != 0 && triangle[(i - 1) % 6] != 0)
-			type = "AAS";
-		else if(triangle[i % 6] != 0 && triangle[(i + 3) % 6] != 0 && triangle[(i - 1) % 6] != 0)
-			type = "AAS";
+	for(int i = 0; i < 6; i += 2) { /* instead of saying "=0", you can just say
+      if (triangle[x]) and it will be treated like a boolean */
+		if (triangle[i + 1] && triangle[(i + 2) % 6] && triangle[(i + 3) % 6]) {
+			return "SAS";
+		} else if (triangle[1] && triangle[3] && triangle[5]) {
+			return "SSS";
+		} else if (triangle[i] && triangle[i + 1] && triangle[(i + 2) % 6]) {
+			return "ASA";
+		} else if (triangle[i] && triangle[(i + 2) % 6] && triangle[(i + 3) % 6]) {
+			return "AAS";
+	  }
 	}
-	return type;
+	/* here's why it doesn't work entirely - this doesn't catch inverses of
+	things, like SAA = AAS, but the statements don't know that. I will fix this
+	shortly. */
+
+
+	return "undefined";
+	/* rather than using a variable like "type", we can just return the value as
+	soon as we get it, thus saving processing time and reducing variable use */
 }
 void SolveASA(double triangle [6], int offset) {
   triangle[offset] = 180 - (triangle[(offset + 2) % 6] +
