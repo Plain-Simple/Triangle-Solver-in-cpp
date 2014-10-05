@@ -7,8 +7,6 @@
 * By Derik Kauffman, Matthew McMillan, Stefan Kussmaul
 *******************************************************************************/
 
-/* everybody please fix your name, sorry I can't spell*/
-
 #include <iostream>
 #include <cmath>
 using namespace std;
@@ -18,31 +16,31 @@ void Input(double triangle[6]);
 //bool IsInvalid(double triangle [6]);
 string IdentifyTriangle(double triangle [6]);
 void SolveASA(double triangle [6], int offset); /// what is int offset?
-/// int offset is the number of the element that is the first A in ASA
-/// this should either be done everywhere or nowhere, so we will need to
-/// figure that out -Matt
+/// int offset is the first S or A in the triangle type, which helps
+/// the solving function do its thing.
 void SolveSSS(double triangle [6]);
 void SolveSAS(double triangle [6]);
 
 int main() {
-	cout << "Please maximize your window and press enter\n\n";
-  /* This is necessary so the logo doesn't get wrapped */
+  cout << "Welcome to the triangle solver. Please press enter to continue.";
   cin.get();
-
-  double triangle[6] = {0,0,0,0,0,0}; // find a better way to do this
-  /* 0, 2, and 4 are angles ABC. The sides are the odd numbers between the
-     angles (going clockwise on the triangle) */
-  PrintGraphics();
-//  do {
-    Input(triangle);
-    string triangleType = IdentifyTriangle(triangle);
-    cout << "Triangle is " << triangleType << endl;
-// } while(IsInvalid(triangle));
+  char go_again = 'n';
+  do {
+    double triangle[6] = {0,0,0,0,0,0}; /// find a better way to do the this
+    /* 0, 2, and 4 are angles. The sides are the odd numbers between the
+       angles (going clockwise on the triangle) */
+    PrintGraphics();
+    //  do {
+        Input(triangle);
+        string triangleType = IdentifyTriangle(triangle);
+        cout << "Triangle is " << triangleType << endl;
+    // } while(IsInvalid(triangle));
+    cout << "\n\nWould you like to run the program again?\n";
+  } while (go_again == 'y');
   return 0;
 }
 
 void PrintGraphics() {
-  // Logo
   cout
       << "8888888b.   888            d8b                     .d8888b.   d8b                           888           \n"
       << "888   Y88b  888            Y8P                    d88P  Y88b  Y8P                           888           \n"
@@ -55,7 +53,8 @@ void PrintGraphics() {
       << "                                                                                  888                       \n"
       << "                                                                                  888                       \n"
       << "                                                                                  888                       \n";
-  // Triangle diagram
+
+
   cout
       << "                       B \n"
       << "                       .\n"
@@ -82,20 +81,23 @@ void Input(double triangle [6]) {
   opposites in loops, etc. -Matt */
 
 
-  for (int i = 65; i < 68; i++) { /* set i to 65 for ascii value "A" */
+  for (int i = 0; i < 3; i++) { /* set i to 65 for ascii value "A" */
                                   /// nice work! -Matt
-	char side = i;
-    cout << "Please enter side " << side << " (0 if unknown): ";
-    cin >> triangle[2 * i - 129];
+    cout << "Please enter side " << char(i + 65) << " (0 if unknown): ";
+    cin >> triangle[(2 * i + 3) % 6];
     cout << endl; /// what looks better; with endl or without?
                   /// looks good with endl, but not a big diff -Matt
   }
-  for (int i = 97; i < 100; i++) { /* set i to 97 for ascii value "a" */
-	char angle = i;
-    cout << "Please enter angle " << angle << " (0 if unknown):";
-    cin >> triangle[(2 * i - 193) % 6];
+  for (int i = 0; i < 3; i++) { /* set i to 97 for ascii value "a" */
+    cout << "Please enter angle " << char(i + 97) << " (0 if unknown):";
+    cin >> triangle[2 * i]; /* the angle input is shifted by one
+                                  due to the "angles opposite sides" diagram */
     cout << endl;
   }
+  /* the following loop is for debugging only:
+  for (int i = 0; i < 6; i++) {
+    cout << endl << triangle[i];
+  } */
 }
 
 /*bool IsInvalid(double triangle[6]) { /// This function simply does not work the way we need it to
@@ -132,7 +134,7 @@ void Input(double triangle [6]) {
   }
 }*/
 
-string IdentifyTriangle(double triangle [6]) { /// not quite there yet; help would be appreciated
+string IdentifyTriangle(double triangle [6]) { /// should be done now
 	for(int i = 0; i < 6; i += 2) { /* instead of saying "=0", you can just say
       if (triangle[x]) and it will be treated like a boolean */
 		if (triangle[i + 1] && triangle[(i + 2) % 6] && triangle[(i + 3) % 6]) {
@@ -141,15 +143,12 @@ string IdentifyTriangle(double triangle [6]) { /// not quite there yet; help wou
 			return "SSS";
 		} else if (triangle[i] && triangle[i + 1] && triangle[(i + 2) % 6]) {
 			return "ASA";
-		} else if (triangle[i] && triangle[(i + 2) % 6] && triangle[(i + 3) % 6]) {
+		} else if ((triangle[i] && triangle[(i + 2) % 6] && triangle[(i + 3) % 6])
+      || (triangle[i + 1] && triangle[(i + 2) % 6] && triangle [(i + 4) % 6])) {
+        /* checks for AAS then SAA */
 			return "AAS";
 	  }
 	}
-	/* here's why it doesn't work entirely - this doesn't catch inverses of
-	things, like SAA = AAS, but the statements don't know that. I will fix this
-	shortly. */
-
-
 	return "undefined";
 	/* rather than using a variable like "type", we can just return the value as
 	soon as we get it, thus saving processing time and reducing variable use */
@@ -164,7 +163,7 @@ void SolveASA(double triangle [6], int offset) {
     asin(triangle[(offset + 2) % 6] * sine_angle_ratio);
 }
 
-void SolveSSS(double triangle [6]) {
+void SolveSSS(double triangle [6]) { /* pretty sure this is completely wrong */
   triangle[0] = acos((pow(triangle[1], 2) + pow(triangle[5], 2) -
                       pow(triangle[3], 2)) / 2 * triangle[1] * triangle[5]);
   triangle[2] = acos((pow(triangle[3], 2) + pow(triangle[1], 2) -
