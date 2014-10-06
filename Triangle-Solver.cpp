@@ -12,14 +12,21 @@
 using namespace std;
 
 void PrintGraphics();
+/* prints out Plain + Simple logo and triangle diagram */
 void Input(double triangle[6]);
+/* take user input of known angles and sides */
 //bool IsInvalid(double triangle [6]);
 string IdentifyTriangle(double triangle [6]);
-void SolveASA(double triangle [6], int offset); /// what is int offset?
-/// int offset is the first S or A in the triangle type, which helps
-/// the solving function do its thing.
+void SolveASA(double triangle [6], int offset);
 void SolveSSS(double triangle [6]);
 void SolveSAS(double triangle [6]);
+/* All above solve functions solve the type of triangle in their name, filling
+   in any unknown sides or angles. offset is the number of the element that is
+   the first A or S in the triangle ID. */
+string GetTriangleType(double triangle[6]);
+/* returns the type of triangle followed by a space (ie. "equilateral ") */
+string GetAngleType(double triangle[6]);
+/* returns the type of triangle angle (ie. obtuse) */
 
 int main() {
   cout << "Welcome to the triangle solver. Please press enter to continue.";
@@ -75,22 +82,14 @@ void PrintGraphics() {
 }
 
 void Input(double triangle [6]) {
-  /* I fixed an issue with the input. We need to remember that on the diagram,
-  side A is across from angle A, but once they are inputted, they are 1 (side)
-  and 4 (angle). It's a bit strange, but it is much harder to work with
-  opposites in loops, etc. -Matt */
-
-
   for (int i = 0; i < 3; i++) { /* set i to 65 for ascii value "A" */
-                                  /// nice work! -Matt
     cout << "Please enter side " << char(i + 65) << " (0 if unknown): ";
     cin >> triangle[(2 * i + 3) % 6];
-    cout << endl; /// what looks better; with endl or without?
-                  /// looks good with endl, but not a big diff -Matt
+    cout << endl;
   }
   for (int i = 0; i < 3; i++) { /* set i to 97 for ascii value "a" */
     cout << "Please enter angle " << char(i + 97) << " (0 if unknown):";
-    cin >> triangle[2 * i]; /* the angle input is shifted by one
+    cin >> triangle[2 * i]; /* the angle input is shifted by one angle (so 2)
                                   due to the "angles opposite sides" diagram */
     cout << endl;
   }
@@ -153,7 +152,7 @@ string IdentifyTriangle(double triangle [6]) { /// should be done now
 	/* rather than using a variable like "type", we can just return the value as
 	soon as we get it, thus saving processing time and reducing variable use */
 }
-void SolveASA(double triangle [6], int offset) {
+void SolveASA(double triangle [6], int offset) { /// Matt: you need a side-sine ratio
   triangle[offset] = 180 - (triangle[(offset + 2) % 6] +
                             triangle[(offset - 2) % 6]);
   double sine_angle_ratio = sin(triangle[(offset + 3) % 6]) / triangle[offset];
@@ -174,3 +173,45 @@ void SolveSAS(double triange [6]) {
 
 }
 
+string GetTriangleType(double triangle[6]) {
+  if ((triangle[0] == triangle [2]) == triangle[4]) {
+    return "equilateral ";
+  }
+  for (int i = 0; i < 3; i++) {
+    if (triangle[2 * i] == ((2 * i + 2) % 6)) {
+      return "isosceles ";
+    }
+  }
+  return "scalene ";
+}
+
+string GetAngleType(double triangle[6]) {
+  for (int i = 0; i < 3; i++) {
+    if (triangle[2 * i] == 90) {
+      return "right triangle";
+    } else if (triangle[2 * i] > 90) {
+      return "obtuse triangle";
+    }
+  }
+  return "acute triangle";
+  /* if no right or obtuse angles were found, it must be an acute triangle */
+}
+
+void SolveAAS(double triangle[6], int offset) {
+  for (int i = 0; i < 6; i += 2) {
+    if (!triangle[i]) { /* find missing angle, then solve for it */
+      triangle [i] = 180 - (((i + 2) % 6) + ((i + 4) % 6));
+    }
+  }
+  double sine_ratio;
+  for (int i = 0; i < 6; i += 2) {
+    if (triangle[i] && triangle[i + 3]) {
+      sine_ratio = triangle[i + 3] / sin(triangle[i]);
+    }
+  }
+  for (int i = 1; i < 6; i += 2) {
+    if (!triangle[i]) { /* find unsolved side */
+      triangle[i] = sine_ratio * sin(triangle[(i + 3) % 6]);
+    }
+  }
+}
