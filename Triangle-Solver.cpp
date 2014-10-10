@@ -50,18 +50,19 @@ void SolveLastAngle(double &angle1, double &angle2, double &angle3);
 int main() {
   cout << "Welcome to the triangle solver. Please press enter to continue.";
   cin.get();
-  char go_again = 'n';
+  DrawGraphics();
   do {
+    char go_again;
     /* 0, 2, and 4 are angles. The sides are the odd numbers between the
        angles (going clockwise on the triangle) */
-    double triangle[6] = {0,0,0,0,0,0}; /// find a better way to do the this
-    PrintGraphics();
-    //  do {
-        Input(triangle);
-        string triangleType = IdentifyTriangle(triangle);
-        cout << "Triangle is " << triangleType << endl;
-    // } while(IsInvalid(triangle));
-    cout << "\n\nWould you like to run the program again?\n";
+    double triangle[6];
+    do {
+      Input(triangle);
+      cout << "Now solving using " << IdentifyTriangle(triangle) << ".\n"; //Not actually solving, yet.
+      cout << "The triangle is " << GetTriangleType(triangle) << " and " << GetAngleType(triangle) << ".\n";
+    } while(IsInvalid(triangle));
+    cout << "\n\nWould you like to run the program again? ";
+    con >> go_again;
   } while (go_again == 'y');
   return 0;
 }
@@ -112,10 +113,6 @@ void Input(double triangle [6]) {
                                   due to the "angles opposite sides" diagram */
     cout << endl;
   }
-  /* the following loop is for debugging only:
-  for (int i = 0; i < 6; i++) {
-    cout << endl << triangle[i];
-  } */
 }
 
 /*bool IsInvalid(double triangle[6]) { /// This function simply does not work the way we need it to
@@ -129,16 +126,13 @@ void Input(double triangle [6]) {
   } else if(triangle[3] < 0 || triangle[5] < 0 || triangle[1] < 0) { // Side errors
     cout << endl << "One or more of the sides has negative length.\n";
     return true;
-  //} //else if(!(triangle[3] && triangle[5] && triangle[1])) {
-    //cout << endl << "One or more of the sides has length 0.\n"; /// This is a little confusing because the sides can be 0
-    //return true;
   } else if((triangle[3] - triangle[5] - triangle[1]) > 0 || (triangle[5] - triangle[3] - triangle[1]) > 0
       || (triangle[1] - triangle[3] - triangle[5]) > 0) {
     cout << endl << "One of the sides is longer than the other two combined.\n";
     return true;
   } else if(!((triangle[3] - triangle[5] - triangle[1]) && (triangle[5] - triangle[3] - triangle[1])
        && (triangle[1] - triangle[3] - triangle[5]))) {
-    cout << endl << "One of the sides is the same length as the other two combined.\n";
+    cout << endl << "One of the sides is the sa length as the other two combined.\n";
     return true;
   } else if(triangle[0] + triangle[2] + triangle[4] > 180) {
     cout << endl << "The sum of the angle measures is greater than 180°.\n";
@@ -207,12 +201,12 @@ string GetTriangleType(double triangle[6]) {
 string GetAngleType(double triangle[6]) {
   for (int i = 0; i < 3; i++) {
     if (triangle[2 * i] == 90) {
-      return "right triangle";
+      return "right";
     } else if (triangle[2 * i] > 90) {
-      return "obtuse triangle";
+      return "obtuse";
     }
   }
-  return "acute triangle";
+  return "acute";
   /* if no right or obtuse angles were found, it must be an acute triangle */
 }
 
