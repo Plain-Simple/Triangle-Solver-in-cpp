@@ -1,0 +1,74 @@
+/*******************************************************************************
+* Triangle Solver OLD.cpp
+*
+* Description: These are functions written for the C++ triangle solver but have
+* since been rendered obsolete. They will be held in this file for future
+* reference.
+*
+* By Matthew McMillan, Stefan Kussmaul, Derik Kauffman
+*******************************************************************************/
+string IdentifyTriangle(double triangle [6]);
+/* Next three solve functions solve the type of triangle in their name, filling
+   in any unknown sides or angles. offset is the number of the element that is
+   the first A or S in the triangle ID. */
+void SolveASA(double triangle [6], int offset);
+void SolveSSS(double triangle [6]);
+void SolveSAA(double triangle [6]);
+
+string IdentifyTriangle(double triangle [6]) { /// should be done now
+	for(int i = 0; i < 6; i += 2) { /* instead of saying "=0", you can just say
+      if (triangle[x]) and it will be treated like a boolean */
+		if (triangle[i + 1] && triangle[(i + 2) % 6] && triangle[(i + 3) % 6]) {
+			return "SAS";
+		} else if (triangle[1] && triangle[3] && triangle[5]) {
+			return "SSS";
+		} else if (triangle[i] && triangle[i + 1] && triangle[(i + 2) % 6]) {
+			return "ASA";
+		} else if ((triangle[i] && triangle[(i + 2) % 6] && triangle[(i + 3) % 6])
+      || (triangle[i + 1] && triangle[(i + 2) % 6] && triangle [(i + 4) % 6])) {
+        /* checks for AAS then SAA */
+			return "AAS";
+	  }
+	}
+	return "undefined";
+	/* rather than using a variable like "type", we can just return the value as
+	soon as we get it, thus saving processing time and reducing variable use */
+}
+void SolveASA(double triangle [6], int offset) { /// Matt: you need a side-sine ratio
+  triangle[offset] = 180 - (triangle[(offset + 2) % 6] +
+                            triangle[(offset - 2) % 6]);
+  double sine_angle_ratio = sin(triangle[(offset + 3) % 6]) / triangle[offset];
+  triangle[(offset + 1) % 6] =
+    asin(triangle[(offset - 2) % 6] * sine_angle_ratio);
+  triangle[(offset - 1) % 6] =
+    asin(triangle[(offset + 2) % 6] * sine_angle_ratio);
+}
+
+void SolveSSS(double triangle [6]) { /* pretty sure this is completely wrong */
+  triangle[0] = acos((pow(triangle[1], 2) + pow(triangle[5], 2) -
+                      pow(triangle[3], 2)) / 2 * triangle[1] * triangle[5]);
+  triangle[2] = acos((pow(triangle[3], 2) + pow(triangle[1], 2) -
+                      pow(triangle[5], 2)) / 2 * triangle[3] * triangle[1]);
+  triangle[4] = 180 - (triangle[2] + triangle[0]);
+}
+
+void SolveAAS(double triangle[6], int offset) {
+  for (int i = 0; i < 6; i += 2) {
+    if (!triangle[i]) { /* find missing angle, then solve for it */
+      triangle [i] = 180 - (((i + 2) % 6) + ((i + 4) % 6));
+    }
+  }
+  double sine_ratio;
+  for (int i = 0; i < 6; i += 2) {
+    if (triangle[i] && triangle[i + 3]) {
+      sine_ratio = triangle[i + 3] / sin(triangle[i]);
+    }
+  }
+  for (int i = 1; i < 6; i += 2) {
+    if (!triangle[i]) { /* find unsolved side */
+      triangle[i] = sine_ratio * sin(triangle[(i + 3) % 6]);
+    }
+  }
+}
+
+
